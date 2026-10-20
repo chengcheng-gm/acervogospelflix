@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GospelFlix - Redirecionando...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b0f19;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e50914;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        .message {
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-bottom: 30px;
+        }
+        /* Spinner de Carregamento */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 215, 0, 0.2);
+            border-top: 5px solid #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo">GOSPEL FLIX</div>
+    <div class="message" id="status-text">Preparando o acervo...</div>
+    <div class="spinner"></div>
+
+    <script>
+        // Função para buscar o link no arquivo JSON e redirecionar
+        async function conectarAoServidor() {
+            try {
+                // O '?t=' + getTime() impede que o navegador use um JSON antigo salvo no cache
+                const resposta = await fetch('url.json?t=' + new Date().getTime());
+                
+                if (!resposta.ok) {
+                    throw new Error('Falha ao carregar configuração.');
+                }
+                
+                const dados = await resposta.json();
+                const linkDestino = dados.gospelflix_url;
+
+                if (linkDestino && linkDestino !== "") {
+                    document.getElementById('status-text').innerText = "Conectado! Redirecionando...";
+                    // Pequeno atraso para o usuário ler a mensagem antes de ir
+                    setTimeout(() => {
+                        window.location.href = linkDestino;
+                    }, 800);
+                } else {
+                    document.getElementById('status-text').innerText = "Servidor offline no momento. Volte mais tarde.";
+                }
+                
+            } catch (erro) {
+                console.error(erro);
+                document.getElementById('status-text').innerText = "Erro ao buscar servidor. Tente novamente.";
+                document.getElementById('status-text').style.color = "#e50914";
+            }
+        }
+
+        // Inicia o processo assim que a página carrega
+        window.onload = conectarAoServidor;
+    </script>
+
+</body>
+</html>
